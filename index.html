@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>مجهز ستوريات الواتساب الاحترافي</title>
+  <meta name="description" content="أداة مخصصة لتقسيم وتجهيز فيديوهات ستوري الواتساب بأعلى جودة وأقل حجم في المتصفح بخصوصية كاملة." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- الهيدر -->
+    <header class="header">
+      <div class="brand">
+        <span class="logo">💬</span>
+        <h1>مجهز ستوريات الواتساب الاحترافي</h1>
+      </div>
+      <p class="tagline">قص وتقسيم وتحويل لعمودي (9:16) مع محرك ضغط ذكي (حجم صغير + جودة عالية)</p>
+    </header>
+
+    <!-- منطقة اختيار الملف -->
+    <section class="card upload-card">
+      <label for="fileInput" class="dropzone" id="dropzone">
+        <span class="dz-icon">📁</span>
+        <span class="dz-title">اسحب فيديو الستوري هنا أو اضغط للاختيار</span>
+        <span class="dz-sub">MP4, WebM, MOV, MKV — يعمل كلياً محلياً على جهازك</span>
+        <input type="file" id="fileInput" accept="video/*,.mp4,.webm,.mov,.mkv" hidden />
+      </label>
+      <div class="file-meta hidden" id="fileMeta">
+        <strong id="fileName"></strong>
+        <span id="fileSize"></span>
+      </div>
+    </section>
+
+    <!-- معاينة الفيديو -->
+    <section class="card preview-section hidden" id="previewSection">
+      <video id="previewVideo" controls></video>
+    </section>
+
+    <!-- -------- قسم خيارات الواتساب -------- -->
+    <section class="card tool-pane hidden" id="panel-compress">
+      <h2 class="pane-title">اختر طريقة التقسيم المتسلسل (المطابقة للواتساب)</h2>
+
+      <div class="field">
+        <div class="auto-split-grid" id="autoSplitList" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px;">
+          <button class="split-option selected" data-mode="60" style="padding: 15px; font-size: 1rem; text-align: right;">
+            ⏱️ <strong>مقطع دقيقة كاملة (60 ثانية)</strong><br />
+            <span style="font-size: 0.85rem; opacity: 0.9;">أقصى حد للواتساب — 720p ضغط ذكي جداً</span>
+          </button>
+          
+          <button class="split-option" data-mode="30" style="padding: 15px; font-size: 1rem; text-align: right;">
+            ⏱️ <strong>نصف مقطع (30 ثانية)</strong><br />
+            <span style="font-size: 0.85rem; opacity: 0.9;">أعلى وضوح 1080p — جودة فائقة وحجم ممتاز</span>
+          </button>
+
+          <button class="split-option" data-mode="15" style="padding: 15px; font-size: 1rem; text-align: right;">
+            ⚡ <strong>ربع مقطع (15 ثانية)</strong><br />
+            <span style="font-size: 0.85rem; opacity: 0.9;">حالات سريعة 1080p — معالجة فورية</span>
+          </button>
+        </div>
+      </div>
+
+      <button class="btn primary" id="runCompress" style="margin-top: 20px; font-size: 1.2rem; background: #25D366; width: 100%;">🚀 معالجة وتقسيم الستوري بأقوى ضغط</button>
+
+      <div class="multi-result hidden" id="multiResult">
+        <div class="multi-success hidden" id="multiSuccess">✅ تم تجهيز ستوريات الواتساب بنجاح!</div>
+        <div class="multi-head">📦 المقاطع الجاهزة للرفع مباشرة</div>
+        <ul class="parts-list" id="partsList"></ul>
+      </div>
+    </section>
+
+    <!-- شريط التقدم -->
+    <section class="card progress-card hidden" id="progressCard">
+      <div class="progress-header">
+        <span id="progressLabel">جارٍ المعالجة…</span>
+        <span id="progressPercent">0%</span>
+      </div>
+      <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+      <p class="hint" id="progressDetail"></p>
+      <p class="error hidden" id="errorBox"></p>
+    </section>
+
+    <footer class="footer">
+      <p>تجهيز محلي آمن 100% داخل المتصفح عبر <code>ffmpeg.wasm</code> دون رفع الملفات لأي خادم.</p>
+    </footer>
+  </div>
+
+  <script>
+    ;(function () {
+      function apiOK() {
+        return (window.FFmpegWASM && window.FFmpegWASM.FFmpeg) ||
+               (window.FFmpeg && window.FFmpeg.createFFmpeg);
+      }
+      function loadFromLocal() {
+        var s = document.createElement('script');
+        s.src = 'lib/ffmpeg.js';
+        s.onerror = function () { loadCDN(); };
+        document.head.appendChild(s);
+      }
+      function loadCDN() {
+        var c = document.createElement('script');
+        c.src = 'https://unpkg.com/@ffmpeg/ffmpeg@0.12.6/dist/umd/ffmpeg.js';
+        c.onerror = function () {
+          var d = document.createElement('script');
+          d.src = 'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.6/dist/umd/ffmpeg.js';
+          document.head.appendChild(d);
+        };
+        document.head.appendChild(c);
+      }
+      loadFromLocal();
+    })();
+  </script>
+  <script src="js/main.js"></script>
+</body>
+</html>

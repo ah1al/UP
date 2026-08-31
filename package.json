@@ -1,0 +1,22 @@
+{
+  "name": "video-pro",
+  "version": "1.0.0",
+  "description": "أداة ويب لضغط الفيديو مع القص في المتصفح عبر ffmpeg.wasm — تعمل على GitHub Pages بخصوصية كاملة.",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve ."
+  },
+  "keywords": [
+    "ffmpeg",
+    "video",
+    "compress",
+    "split",
+    "ffmpeg-wasm",
+    "github-pages"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "serve": "^14.2.1"
+  }
+}
