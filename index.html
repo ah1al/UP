@@ -1,4 +1,10 @@
 <!DOCTYPE html>
+<script>
+  // إضافة رؤوس الأمان المطلوبة لعمل ffmpeg.wasm
+  if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') {
+    window.location.href = window.location.href.replace('http:', 'https:');
+  }
+</script>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
